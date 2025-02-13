@@ -1,18 +1,27 @@
 #!/usr/bin/env bash
 
-# Last Edit: 12.02.2025
+# Last Edit: 13.02.2025
+
+echo " 
+            ...This script is created for Ubuntu LTS 24.04... 
+For newer LTS Version this script may need some changes like package names etc.
+"
+echo ""
+sleep 5
+clear
 
 echo ""
 echo "----------------------------------------------"
 echo "    ..Ubuntu LTS config after install..       "
 echo "              Minimal Install                 "
 echo "----------------------------------------------"
-sleep 1
+sleep 2
 
 read -p "   Read this script before execute!!
                Press any key to continue..
 "
 
+echo ""
 sudo apt purge -y apport* 
 sudo apt autoremove -y
 clear
@@ -26,21 +35,29 @@ sudo snap remove gnome-42-2204
 sudo snap remove snap-store
 sudo systemctl disable --now snapd
 sudo apt purge -y snapd
-sudo rm -rf /snap /var/snap /var/lib/snapd /var/cache/snapd /usr/lib/snapd ~/snap
-
-cat << EOF | sudo tee -a /etc/apt/preferences.d/no-snap.pref
-Package: snapd
-Pin: release a=*
-Pin-Priority: -10
-EOF
-
-sudo chown root:root /etc/apt/preferences.d/no-snap.pref
+sudo apt-mark hold snapd
+sudo rm -vrf ~/snap 
+sudo rm -vrf /snap /var/snap /var/lib/snapd /var/cache/snapd /usr/lib/snapd 
 clear
 
 
+# PPA for firefox and thunderbird
 sudo add-apt-repository -y ppa:mozillateam/ppa
-sudo add-apt-repository -y ppa:oibaf/graphics-drivers
+
+# Xtra packages like latest yt-dlp
 sudo add-apt-repository -y ppa:xtradeb/apps
+
+# Latest Strawberry Player
+sudo add-apt-repository -y ppa:jonaski/strawberry
+
+# Latest stable flatpak
+sudo add-apt-repository -y ppa:flatpak/stable
+
+# Latest point release of Mesa plus select non-invasive early backports
+sudo add-apt-repository -y ppa:kisak/kisak-mesa
+
+# Latest amd drivers with latest mesa. May be unstable sometimes.
+# sudo add-apt-repository -y ppa:oibaf/graphics-drivers
 
 sudo dpkg --add-architecture i386
 
@@ -61,13 +78,39 @@ sudo apt install -y \
     libavformat-extra \
     libfaad2 \
     libfaac0 \
-    libxvidcore \
     ffmpeg \
     lame \
     flac \
     x264 \
     x265 \
     opus-tools 
+clear
+
+echo ""
+echo "Install zsh shell"
+echo ""
+sleep 2
+sudo apt -y install curl
+sudo apt -y install zsh
+sh -c "$(curl -fsSL https://raw.githubusercontent.com/ohmyzsh/ohmyzsh/master/tools/install.sh)"
+# chsh -s $(which zsh)
+
+# Start zsh with a terminal
+echo "
+exec zsh
+" | tee -a ~/.bashrc
+touch ~/.zshrc
+sleep 2
+clear
+
+
+
+# Install Nvidia Graphics Driver (change the nvidia version to the newest one first)
+# sudo apt install -y nvidia-dkms-525 nvidia-driver-525 nvidia-settings libnvidia-gl-525 libnvidia-gl-525:i386 nvidia-compute-utils-525 nvidia-utils-525  
+
+# Intel Graphics Driver Install
+# sudo apt-get install intel-media-va-driver-non-free i965-va-driver-shaders intel-opencl-icd intel-hdcp libigfxcmrt7 libva-glx2
+
 
 # Install Mesa drivers
 sudo apt install -y mesa-utils mesa-va-drivers mesa-vdpau-drivers mesa-opencl-icd
@@ -76,18 +119,14 @@ sudo apt install -y ocl-icd-libopencl1 vulkan-tools vulkan-validationlayers
 sudo apt install -y wayland-protocols wayland-utils libva-wayland2 libwayland-egl++1 
 
 
-sudo apt install -y firefox thunderbird file-roller
-sudo apt install -y build-essential fakeroot git winbind dkms ufw xfsdump f2fs-tools mtools cpufrequtils
+sudo apt install -y firefox eog eog-plugins file-roller
+sudo apt install -y build-essential binutils fakeroot git winbind dkms ufw xfsdump f2fs-tools mtools cpufrequtils
 sudo apt install -y synaptic gdebi gnome-tweaks gnome-firmware gnome-disk-utility gsmartcontrol
-sudo apt install -y soundconverter celluloid yt-dlp pavucontrol pipewire-v4l2 pipewire-libcamera pipewire-vulkan
+sudo apt install -y soundconverter celluloid strawberry yt-dlp pavucontrol pipewire-v4l2 pipewire-libcamera
 
 # Install Steam
-sudo apt install -y steam-installer steam-libs steam-libs-i386:i386 protontricks ttf-mscorefonts-installer
-sudo apt install -y libvkd3d1 libvkd3d-shader1 goverlay libfaudio0 libgdiplus
-
-wget -O discord.deb https://discord.com/api/download?platform=linux&format=deb
-sudo dpkg -i discord.deb
-sudo apt-get install -f
+sudo apt-get install steam-installer protontricks ttf-mscorefonts-installer
+sudo apt install -y libvkd3d1 libvkd3d-shader1 goverlay libfaudio0 libgdiplus 
 
 
 # Download Protonup-qt AppImage
@@ -104,14 +143,22 @@ wget http://packages.linuxmint.com/pool/main/m/mint-l-theme/mint-l-theme_1.9.9_a
 sudo dpkg -i mint-l-theme_1.9.9_all.deb
 sudo apt install -f
 
+# Install Linux Mint Wallpaper
+wget http://packages.linuxmint.com/pool/main/m/mint-backgrounds-ulyana/mint-backgrounds-ulyana_1.1_all.deb
+sudo dpkg -i mint-backgrounds-ulyana_1.1_all.deb
+sudo apt install -f
+
+# Remove downloaded stuff
 rm mint-l-icons_1.7.4_all.deb
 rm mint-l-theme_1.9.9_all.deb
+rm mint-backgrounds-ulyana_1.1_all.deb
+
 
 
 echo 'deb http://deb.xanmod.org releases main' | sudo tee /etc/apt/sources.list.d/xanmod-kernel.list
 wget -qO - https://dl.xanmod.org/gpg.key | sudo apt-key --keyring /etc/apt/trusted.gpg.d/xanmod-kernel.gpg add -
 sudo apt update  
-sudo apt install linux-xanmod-x64v3
+sudo apt install linux-xanmod-lts-x64v3
 sudo update-grub
 
 
@@ -144,6 +191,7 @@ clear
 
 sudo apt autoremove -y
 sudo apt autoclean -y
+sudo apt purge -y 
 sudo apt clean
 
 sudo systemctl enable fstrim.timer
@@ -151,20 +199,23 @@ sudo fstrim -av
 
 
 echo "
-CPU_MAX_FREQ=high
+CPU_LIMIT=0
+GPU_USE_SYNC_OBJECTS=1
+PYTHONOPTIMIZE=1
 MESA_LOADER_DRIVER_OVERRIDE=radeonsi
-VK_ICD_FILENAMES=/usr/share/vulkan/icd.d/radeon_icd.json
 __GL_SYNC_TO_VBLANK=1
 __GLX_VENDOR_LIBRARY_NAME=mesa
 PROTON_USE_WINED3D=1
-PROTON_NO_ESYNC=1
+PROTON_USE_FSYNC=1
 GAMEMODE=1
-SDL_VIDEODRIVER=x11  
-SDL_RENDER_DRIVER=opengl  
 PULSE_LATENCY_MSEC=30  
 " | sudo tee -a /etc/environment
 
-
+clear
 echo ""
-read -p "Installation complete! Press any key to restart the system"
+echo "----------------------------------------------"
+echo "    ...System config is now complete...       "
+echo "       System restarts in 6 seconds !         "
+echo "----------------------------------------------"
+sleep 6
 sudo reboot
