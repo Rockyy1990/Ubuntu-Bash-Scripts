@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 
-# Last Edit: 13.02.2025
+# Last Edit: 14.02.2025
 
 echo " 
             ...This script is created for Ubuntu LTS 24.04... 
@@ -66,6 +66,12 @@ sudo apt update
 sudo apt upgrade -y
 sudo apt dist-upgrade -y
 
+
+# Install flatpak. Replace for Ubuntu Snap.
+sudo apt install -y flatpak
+flatpak remote-add --if-not-exists flathub https://dl.flathub.org/repo/flathub.flatpakrepo
+
+
 # Install essential multimedia packages
 sudo apt install -y \
     gstreamer1.0-plugins-good \
@@ -124,11 +130,23 @@ sudo apt install -y build-essential binutils fakeroot git winbind dkms ufw xfsdu
 sudo apt install -y synaptic gdebi gnome-tweaks gnome-firmware gnome-disk-utility gsmartcontrol
 sudo apt install -y soundconverter celluloid strawberry yt-dlp pavucontrol pipewire-v4l2 pipewire-libcamera
 
+# Install Virt-Manager
+sudo apt install -y virt-manager ovmf qemu-kvm qemu-utils libvirt-daemon-system libvirt-clients bridge-utils 
+
+
 # Install Steam
-sudo apt-get install steam-installer protontricks ttf-mscorefonts-installer
-sudo apt install -y libvkd3d1 libvkd3d-shader1 goverlay libfaudio0 libgdiplus 
+# sudo apt install -y software-properties-common apt-transport-https
+# curl -s http://repo.steampowered.com/steam/archive/stable/steam.gpg | sudo gpg --dearmor -o /usr/share/keyrings/steam.gpg > /dev/null
+# echo 'deb [arch=amd64 signed-by=/usr/share/keyrings/steam.gpg] http://repo.steampowered.com/steam/ stable steam' | sudo tee /etc/apt/sources.list.d/steam.list
+# sudo apt update
+# sudo apt install -y libgl1-mesa-dri:amd64 libgl1-mesa-dri:i386 steam-launcher
+sudo apt install -y protontricks ttf-mscorefonts-installer libvkd3d1 libvkd3d-shader1 goverlay libfaudio0 libgdiplus
 
+flatpak install -y flathub com.github.tchx84.Flatseal
+flatpak install -y flathub com.usebottles.bottles
+flatpak install flathub com.valvesoftware.Steam
 
+ 
 # Download Protonup-qt AppImage
 wget https://github.com/DavidoTek/ProtonUp-Qt/releases/download/v2.11.1/ProtonUp-Qt-2.11.1-x86_64.AppImage
 
@@ -144,14 +162,16 @@ sudo dpkg -i mint-l-theme_1.9.9_all.deb
 sudo apt install -f
 
 # Install Linux Mint Wallpaper
-wget http://packages.linuxmint.com/pool/main/m/mint-backgrounds-ulyana/mint-backgrounds-ulyana_1.1_all.deb
-sudo dpkg -i mint-backgrounds-ulyana_1.1_all.deb
-sudo apt install -f
+wget http://packages.linuxmint.com/pool/main/m/mint-backgrounds-victoria/mint-backgrounds-victoria_1.2_all.deb
+wget http://packages.linuxmint.com/pool/main/m/mint-backgrounds-tina/mint-backgrounds-tina_1.2_all.deb
+sudo gdebi -n mint-backgrounds-victoria_1.2_all.deb
+sudo gdebi -n mint-backgrounds-tina_1.2_all.deb
+
 
 # Remove downloaded stuff
 rm mint-l-icons_1.7.4_all.deb
 rm mint-l-theme_1.9.9_all.deb
-rm mint-backgrounds-ulyana_1.1_all.deb
+rm mint-backgrounds-victoria_1.2_all.deb
 
 
 
@@ -180,8 +200,6 @@ echo -e "
 tmpfs /var/tmp tmpfs nodiratime,nodev,nosuid,mode=1777 0 0
 tmpfs /var/log tmpfs nodiratime,nodev,nosuid,mode=1777 0 0
 tmpfs /var/run tmpfs nodiratime,nodev,nosuid,mode=1777 0 0
-tmpfs /var/lock tmpfs nodiratime,nodev,nosuid,mode=1777 0 0
-tmpfs /var/cache tmpfs nodiratime,nodev,nosuid,mode=1777 0 0
 tmpfs /var/volatile tmpfs nodiratime,nodev,nosuid,mode=1777 0 0
 tmpfs /var/spool tmpfs nodiratime,nodev,nosuid,mode=1777 0 0
 tmpfs /media tmpfs nodiratime,nodev,nosuid,mode=1777 0 0
@@ -202,14 +220,21 @@ echo "
 CPU_LIMIT=0
 GPU_USE_SYNC_OBJECTS=1
 PYTHONOPTIMIZE=1
-MESA_LOADER_DRIVER_OVERRIDE=radeonsi
 __GL_SYNC_TO_VBLANK=1
 __GLX_VENDOR_LIBRARY_NAME=mesa
-PROTON_USE_WINED3D=1
+MESA_BACK_BUFFER=ximage
+MESA_NO_DITHER=0
+MESA_SHADER_CACHE_DISABLE=false
+mesa_glthread=true
+MESA_DEBUG=0
+PROTON_USE_WINED3D=0
 PROTON_USE_FSYNC=1
 GAMEMODE=1
-PULSE_LATENCY_MSEC=30  
-" | sudo tee -a /etc/environment
+DXVK_ASYNC=1
+WINE_FSR_OVERRIDE=1
+WINE_FULLSCREEN_FSR=1
+WINE_VK_USE_FSR=1
+ " | sudo tee -a /etc/environment
 
 clear
 echo ""
