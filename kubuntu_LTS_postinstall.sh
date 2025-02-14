@@ -119,6 +119,9 @@ sudo apt install -y soundconverter celluloid strawberry yt-dlp pavucontrol pipew
 # Install Virt-Manager
 sudo apt install -y virt-manager ovmf qemu-kvm qemu-utils libvirt-daemon-system libvirt-clients bridge-utils
 
+# Guestfs support for Virt-Manager
+sudo apt install -y guestfs-tools guestfsd libguestfs-gfs2 libguestfs-rsync python3-guestfs libguestfs-ocaml oz
+
 
 # Install Steam
 sudo apt install -y steam-installer
