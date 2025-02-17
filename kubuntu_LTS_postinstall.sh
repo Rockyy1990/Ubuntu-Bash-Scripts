@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 
-# Last Edit: 14.02.2025
+# Last Edit: 17.02.2025
 
 echo "
             ...This script is created for Kubuntu LTS 24.04...
@@ -13,23 +13,32 @@ clear
 echo ""
 echo "----------------------------------------------"
 echo "         ..config after install..             "
-echo "            Kubuntu LTS minimal               "
+echo "               Kubuntu LTS                    "
 echo "----------------------------------------------"
 sleep 2
 
 read -p "   Read this script before execute!!
-               Press any key to continue..
+    Tis script is for the minimal install from Kubuntu.
+			   Press any key to continue..
 "
 
 echo ""
+
+# This will effectively prevent snapd from being installed or upgraded
+sudo apt-mark hold snapd
+sudo systemctl mask snapd.service
+
 sudo apt purge -y apport*
 sudo apt autoremove -y
 clear
 
 
 
-# PPA for firefox and thunderbird
+# PPA from Mozilla for firefox and thunderbird
 sudo add-apt-repository -y ppa:mozillateam/ppa
+
+# PPA for discord deb package
+sudo add-apt-repository -y ppa:javinator9889/discord
 
 # Xtra packages like latest yt-dlp
 sudo add-apt-repository -y ppa:xtradeb/apps
@@ -46,12 +55,17 @@ sudo add-apt-repository -y ppa:kisak/kisak-mesa
 # Latest amd drivers with latest mesa. May be unstable sometimes.
 # sudo add-apt-repository -y ppa:oibaf/graphics-drivers
 
+# Add 32bit package support
 sudo dpkg --add-architecture i386
 
-sudo apt update
 
+echo ""
+echo "System upgrade.."
+sleep 2
+sudo apt update
 sudo apt upgrade -y
 sudo apt dist-upgrade -y
+clear
 
 # Install flatpak. Replace for Ubuntu Snap.
 sudo apt install -y flatpak
@@ -84,6 +98,11 @@ echo ""
 sleep 2
 sudo apt -y install curl
 sudo apt -y install zsh
+echo ""
+read -p "
+Installing Ohmyzsh. Dont press y after the install. Otherwise the script will stopp.
+                        Press any Key to continue..
+"
 sh -c "$(curl -fsSL https://raw.githubusercontent.com/ohmyzsh/ohmyzsh/master/tools/install.sh)"
 # chsh -s $(which zsh)
 
@@ -111,9 +130,10 @@ sudo apt install -y ocl-icd-libopencl1 vulkan-tools vulkan-validationlayers
 sudo apt install -y wayland-protocols wayland-utils libva-wayland2 libwayland-egl++1
 
 
-sudo apt install -y firefox eog eog-plugins file-roller
+# Some needed packages
+sudo apt install -y firefox ark p7zip-full unrar okular libreoffice discord
 sudo apt install -y build-essential binutils fakeroot git winbind dkms ufw xfsdump f2fs-tools mtools cpufrequtils
-sudo apt install -y synaptic gdebi gnome-tweaks gnome-firmware gnome-disk-utility gsmartcontrol
+sudo apt install -y synaptic gdebi gnome-firmware gnome-disk-utility gsmartcontrol
 sudo apt install -y soundconverter celluloid strawberry yt-dlp pavucontrol pipewire-v4l2 pipewire-libcamera
 
 # Install Virt-Manager
@@ -216,7 +236,7 @@ WINE_VK_USE_FSR=1
 echo ""
 echo "----------------------------------------------"
 echo "    ...System config is now complete...       "
-echo "       System restarts in 6 seconds !         "
+echo "       System reboot after 6 seconds !         "
 echo "----------------------------------------------"
 sleep 6
 sudo reboot
