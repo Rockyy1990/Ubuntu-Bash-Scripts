@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 
-# Last Edit: 14.02.2025
+# Last Edit: 19.02.2025
 
 echo " 
             ...This script is created for Ubuntu LTS 24.04... 
@@ -172,6 +172,7 @@ sudo gdebi -n mint-backgrounds-tina_1.2_all.deb
 rm mint-l-icons_1.7.4_all.deb
 rm mint-l-theme_1.9.9_all.deb
 rm mint-backgrounds-victoria_1.2_all.deb
+rm mint-backgrounds-tina_1.2_all.deb
 
 
 
@@ -202,7 +203,6 @@ tmpfs /var/log tmpfs nodiratime,nodev,nosuid,mode=1777 0 0
 tmpfs /var/run tmpfs nodiratime,nodev,nosuid,mode=1777 0 0
 tmpfs /var/volatile tmpfs nodiratime,nodev,nosuid,mode=1777 0 0
 tmpfs /var/spool tmpfs nodiratime,nodev,nosuid,mode=1777 0 0
-tmpfs /media tmpfs nodiratime,nodev,nosuid,mode=1777 0 0
 tmpfs /dev/shm tmpfs nodiratime,nodev,nosuid,mode=1777 0 0
 " | sudo tee -a /etc/fstab
 clear
